@@ -127,6 +127,10 @@ app.delete("/products/:id", async (c) => {
   }
 });
 
-console.log("API Spice Oil is Running");
+Bun.serve({
+  fetch: app.fetch,
+  port: 3000, // Change the port if needed
+});
 
+console.log(`API Spice Oil is Running`);
 export default app;

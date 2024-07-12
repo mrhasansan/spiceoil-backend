@@ -1,0 +1,17 @@
+{
+  "name": "spiceoil-backend",
+  "scripts": {
+    "dev": "bun run --hot src/index.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.16.2",
+    "@types/node": "^20.14.10",
+    "hono": "^4.4.13",
+    "prisma": "^5.16.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.3"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}

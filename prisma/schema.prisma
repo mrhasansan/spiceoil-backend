@@ -11,19 +11,22 @@ datasource db {
 }
 
 model User {
-  id    Int    @id @default(autoincrement())
+  id    String @id @default(cuid())
   email String @unique
   name  String
 }
 
 model Product {
-  id              Int      @id @default(autoincrement())
-  name            String
-  price           Float
-  quantity        Int
-  image           String
-  category        String
+  id String @id @default(cuid())
+
+  name             String
+  price            Float
+  quantity         Int
+  image            String
+  category         String
   olfactoryProfile String
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  description      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

@@ -21,8 +21,9 @@ model Product {
 
   name             String
   price            Float
+  slug             String  @unique
   quantity         Int
-  image            String
+  imageURL         String
   category         String
   olfactoryProfile String
   description      String?

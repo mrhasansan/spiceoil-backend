@@ -20,7 +20,7 @@ app.get("/products", async (c) => {
 });
 
 app.get("/products/:id", async (c) => {
-  const id = Number(c.req.param("id"));
+  const id = String(c.req.param("id"));
   if (!id) {
     return c.json({
       message: " There is no id product",
@@ -51,10 +51,12 @@ app.post("/products", async (c) => {
       data: {
         name: String(body.name),
         price: Number(body.price),
+        slug: String(body.slug),
         quantity: Number(body.quantity),
-        image: String(body.image),
+        imageURL: String(body.image),
         category: String(body.category),
         olfactoryProfile: String(body.olfactoryProfile),
+        description: String(body.description),
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -71,7 +73,7 @@ app.post("/products", async (c) => {
 });
 
 app.put("/products/:id", async (c) => {
-  const id = Number(c.req.param("id"));
+  const id = String(c.req.param("id"));
   if (!id) {
     return c.json({
       message: "There is no id Product",
@@ -85,7 +87,7 @@ app.put("/products/:id", async (c) => {
         name: body.name ? String(body.name) : undefined,
         price: body.price ? Number(body.price) : undefined,
         quantity: body.quantity ? Number(body.quantity) : undefined,
-        image: body.image ? String(body.image) : undefined,
+        imageURL: body.image ? String(body.image) : undefined,
         category: body.category ? String(body.category) : undefined,
         olfactoryProfile: body.olfactoryProfile ? String(body.olfactoryProfile) : undefined,
       },
@@ -108,7 +110,7 @@ app.delete("/products", async (c) => {
 });
 
 app.delete("/products/:id", async (c) => {
-  const id = Number(c.req.param("id"));
+  const id = String(c.req.param("id"));
   if (!id) {
     return c.json({
       message: " There is no id Product",

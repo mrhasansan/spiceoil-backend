@@ -1,7 +1,11 @@
 import { Hono } from "hono";
+import { cors } from "hono/cors";
+
 import { prisma } from "./libs/prisma";
 
 const app = new Hono();
+
+app.use("/*", cors());
 
 app.get("/", (c) => {
   return c.json({
@@ -89,7 +93,9 @@ app.put("/products/:id", async (c) => {
         quantity: body.quantity ? Number(body.quantity) : undefined,
         imageURL: body.image ? String(body.image) : undefined,
         category: body.category ? String(body.category) : undefined,
-        olfactoryProfile: body.olfactoryProfile ? String(body.olfactoryProfile) : undefined,
+        olfactoryProfile: body.olfactoryProfile
+          ? String(body.olfactoryProfile)
+          : undefined,
       },
     });
     return c.json(newProduct);

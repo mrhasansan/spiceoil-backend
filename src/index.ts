@@ -1,6 +1,8 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { prisma } from "./libs/prisma";
+import { z } from "zod";
+import { zValidator } from "@hono/zod-validator";
 
 const app = new Hono();
 
@@ -22,28 +24,14 @@ app.get("/products", async (c) => {
   }
 });
 
-app.get("/products/:id", async (c) => {
-  const id = String(c.req.param("id"));
-  if (!id) {
-    return c.json({
-      message: " There is no id product",
-    });
-  }
-  try {
-    const product = await prisma.product.findUnique({
-      where: { id: id },
-    });
-    if (!product) {
-      c.status(404);
-      return c.json({
-        message: "Product not found",
-      });
-    }
-    return c.json(product);
-  } catch (error) {
-    console.log("Error fetching product", error);
-    return c.json({ error: "Error fetching Product" }, 500);
-  }
+app.get("/products/:slug", zValidator("param", z.object({ slug: z.string() })), async (c) => {
+  const { slug } = c.req.valid("param");
+
+  const products = await prisma.product.findMany({
+    where: { slug },
+  });
+
+  return c.json(products);
 });
 
 app.post("/products", async (c) => {

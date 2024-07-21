@@ -27,7 +27,7 @@ app.get("/products", async (c) => {
 app.get("/products/:slug", zValidator("param", z.object({ slug: z.string() })), async (c) => {
   const { slug } = c.req.valid("param");
 
-  const products = await prisma.product.findMany({
+  const products = await prisma.product.findUnique({
     where: { slug },
   });
 

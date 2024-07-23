@@ -25,13 +25,25 @@ app.get("/products", async (c) => {
 });
 
 app.get("/products/:slug", zValidator("param", z.object({ slug: z.string() })), async (c) => {
-  const { slug } = c.req.valid("param");
+  try {
+    const { slug } = c.req.valid("param");
+    const product = await prisma.product.findUnique({
+      where: { slug: slug },
+    });
 
-  const products = await prisma.product.findUnique({
-    where: { slug },
-  });
+    if (!product) {
+      return c.json({
+        message: `Product not found`,
+      });
+    }
 
-  return c.json(products);
+    return c.json({
+      status: "success",
+      data: product,
+    });
+  } catch (error) {
+    console.log(`Error get product detail `);
+  }
 });
 
 app.post("/products", async (c) => {

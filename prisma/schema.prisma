@@ -11,9 +11,28 @@ datasource db {
 }
 
 model User {
-  id    String @id @default(cuid())
-  email String @unique
-  name  String
+  id String @id @default(cuid())
+
+  email    String @unique
+  username String @unique
+
+  password Password?
+  Cart     Cart[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Password {
+  id String @id @default(cuid())
+
+  hash String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Product {
@@ -27,6 +46,31 @@ model Product {
   category         String
   olfactoryProfile String
   description      String?
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  CartItems CartItem[]
+}
+
+model CartItem {
+  id String @id @default(cuid())
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int     @default(1)
+  cart      Cart    @relation(fields: [cartId], references: [id])
+  cartId    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Cart {
+  id String @id @default(cuid())
+
+  user   User       @relation(fields: [userId], references: [id])
+  userId String
+  items  CartItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -12,6 +12,7 @@ app.get("/", (c) => {
   return c.json({
     message: " Welcome to REST API of Spices and Essential Oil",
     products: "/products",
+    users: "/users",
   });
 });
 
@@ -45,6 +46,42 @@ app.get("/products/:slug", zValidator("param", z.object({ slug: z.string() })), 
     console.log(`Error get product detail `);
   }
 });
+
+app.get("/users", async (c) => {
+  const users = await prisma.user.findMany({
+    select: {
+      id: true,
+      username: true,
+    },
+  });
+  return c.json(users);
+});
+
+app.get(
+  "users/:username",
+
+  zValidator("param", z.object({ username: z.string() })),
+  async (c) => {
+    const { username } = c.req.valid("param");
+    const user = await prisma.user.findUnique({
+      where: { username },
+      select: {
+        id: true,
+        username: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    if (!user) {
+      c.status(404);
+      c.json({
+        message: `User with ${user} not found`,
+      });
+    }
+
+    return c.json(user);
+  }
+);
 
 app.post("/products", async (c) => {
   const body = await c.req.json();

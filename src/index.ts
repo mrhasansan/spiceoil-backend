@@ -3,8 +3,8 @@ import { cors } from "hono/cors";
 import { prisma } from "./libs/prisma";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
-import { password } from "bun";
-import { hashPassword } from "./libs/password";
+import { hashPassword, verifypasswprd } from "./libs/password";
+import { createToken } from "./libs/jwt";
 
 const app = new Hono();
 
@@ -151,6 +151,56 @@ app.post(
         message: "Register user fail",
       });
     }
+  }
+);
+
+app.post(
+  "/users/login",
+  zValidator(
+    "json",
+    z.object({
+      username: z.string(),
+      password: z.string(),
+    })
+  ),
+  async (c) => {
+    const body = c.req.valid("json");
+
+    const foundUser = await prisma.user.findUnique({
+      where: { username: body.username },
+      include: { password: { select: { hash: true } } },
+    });
+
+    if (!foundUser) {
+      c.status(404);
+      return c.json({
+        message: " Login failed because user not found",
+      });
+    }
+    if (!foundUser?.password?.hash) {
+      c.status(401);
+      return c.json({
+        message: "Login Failed because does not have a password",
+      });
+    }
+    const validPassword = await verifypasswprd(foundUser.password.hash, body.password);
+
+    if (!validPassword) {
+      c.status(401);
+      return c.json({
+        message: "Wrong Password",
+      });
+    }
+    const token = await createToken(foundUser.id);
+
+    if (!token) {
+      c.status(400);
+      return c.json({ message: " Token failed to create" });
+    }
+    return c.json({
+      message: "Login succesfull",
+      token,
+    });
   }
 );
 

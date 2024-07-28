@@ -3,6 +3,8 @@ import { cors } from "hono/cors";
 import { prisma } from "./libs/prisma";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
+import { password } from "bun";
+import { hashPassword } from "./libs/password";
 
 const app = new Hono();
 
@@ -111,6 +113,46 @@ app.post("/products", async (c) => {
     );
   }
 });
+
+app.post(
+  "/users/register",
+  zValidator(
+    "json",
+    z.object({
+      username: z.string(),
+      email: z.string(),
+      password: z.string(),
+    })
+  ),
+  async (c) => {
+    const body = c.req.valid("json");
+    try {
+      const newUser = await prisma.user.create({
+        data: {
+          username: body.username,
+          email: body.email,
+          password: {
+            create: {
+              hash: await hashPassword(body.password),
+            },
+          },
+        },
+      });
+
+      return c.json({
+        message: "Register new user succesfull",
+        newUser: {
+          username: newUser.username,
+        },
+      });
+    } catch (error) {
+      c.status(400);
+      return c.json({
+        message: "Register user fail",
+      });
+    }
+  }
+);
 
 app.put("/products/:id", async (c) => {
   const id = String(c.req.param("id"));

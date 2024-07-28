@@ -27,8 +27,8 @@ export const createToken = async (userId: string) => {
 export const validateToken = async (token: string) => {
   const secret = await getSecrec();
   try {
-    const decodeToken = await validateJWT("HS256", secret, token);
-    return decodeToken;
+    const decodedToken = await validateJWT("HS256", secret, token);
+    return decodedToken;
   } catch (error) {
     console.log(error);
     return null;

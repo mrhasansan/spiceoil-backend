@@ -5,8 +5,18 @@ import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import { hashPassword, verifypasswprd } from "./libs/password";
 import { createToken } from "./libs/jwt";
+import { checkUserToken } from "./middlewares/check-user-token";
 
-const app = new Hono();
+type Bindings = {
+  TOKEN: string;
+};
+
+type Variables = {
+  user: {
+    id: string;
+  };
+};
+const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 app.use("/*", cors());
 
@@ -203,6 +213,19 @@ app.post(
     });
   }
 );
+
+app.get("/auth/me", checkUserToken(), async (c) => {
+  const user = c.get("user");
+
+  const userData = await prisma.user.findUnique({
+    where: { id: user.id },
+  });
+
+  return c.json({
+    message: "User data",
+    user: userData,
+  });
+});
 
 app.put("/products/:id", async (c) => {
   const id = String(c.req.param("id"));

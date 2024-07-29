@@ -125,7 +125,7 @@ app.post("/products", async (c) => {
 });
 
 app.post(
-  "/users/register",
+  "/auth/register",
   zValidator(
     "json",
     z.object({
@@ -165,7 +165,7 @@ app.post(
 );
 
 app.post(
-  "/users/login",
+  "/auth/signin",
   zValidator(
     "json",
     z.object({
@@ -214,7 +214,7 @@ app.post(
   }
 );
 
-app.get("/auth/me", checkUserToken(), async (c) => {
+app.get("/auth/myprofile", checkUserToken(), async (c) => {
   const user = c.get("user");
 
   const userData = await prisma.user.findUnique({

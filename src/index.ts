@@ -309,6 +309,54 @@ app.get("/cart", checkUserToken(), async (c) => {
   });
 });
 
+app.post(
+  "/cart/items",
+  checkUserToken(),
+  zValidator(
+    "json",
+    z.object({
+      productId: z.string(),
+      quantity: z.number(),
+    })
+  ),
+  async (c) => {
+    const user = c.get("user");
+    const body = c.req.valid("json");
+
+    const existringCart = await prisma.cart.findFirst({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (!existringCart) {
+      c.status(404);
+      return c.json({
+        message: "Cart shopping does not exist",
+      });
+    }
+
+    const updatedCart = await prisma.cart.update({
+      where: { id: existringCart.id },
+      data: {
+        items: {
+          create: {
+            productId: body.productId,
+            quantity: body.quantity,
+          },
+        },
+      },
+      include: {
+        items: true,
+      },
+    });
+
+    return c.json({
+      message: "Product have been added to the cart",
+      cart: updatedCart,
+    });
+  }
+);
+
 Bun.serve({
   fetch: app.fetch,
   port: 3000, // Change the port if needed

@@ -19,12 +19,19 @@
 | `/products/:id`    | `PUT`    | Update one products by id |
 | `/products/seeded` | `PUT`    | seed many products        |
 
-## Auth:
+## Authentication
 
-| Endpoint           | HTTP  | Desctription             |
-| ------------------ | ----- | ------------------------ |
-| `/users`           | `GET` | Get all users            |
-| `/users/:username` | `GET` | Get one user by username |
+| Endpoint           | HTTP     | Desctription                    |
+| ------------------ | -------- | ------------------------------- |
+| `/users`           | `GET`    | Get all users                   |
+| `/users/:username` | `GET`    | Get one user by username        |
+| `/auth/register`   | `POST`   | Authenticated user registration |
+| `/auth/signin`     | `POST`   | Authenticated user sign in      |
+| `/auth/myprofile`  | `POST`   | get detail data users           |
+| `/cart`            | `GET`    | get data cart by username       |
+| `/cart/items`      | `POST`   | post data cart by username      |
+| `/cart/items`      | `PUT`    | update data cart by username    |
+| `/cart/items`      | `DELETE` | delete data cart by username    |
 
 ## Database Design/Schema/Entity Relationship Diagram (ERD)
 

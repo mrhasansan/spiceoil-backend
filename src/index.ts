@@ -25,6 +25,7 @@ app.get("/", (c) => {
     message: " Welcome to REST API of Spices and Essential Oil",
     products: "/products",
     users: "/users",
+    cart: "/cart",
   });
 });
 
@@ -282,6 +283,30 @@ app.delete("/products/:id", async (c) => {
   } catch (error) {
     return c.json({ error: "Error deleting product" });
   }
+});
+
+app.get("/cart", checkUserToken(), async (c) => {
+  const user = c.get("user");
+
+  const existingCart = await prisma.cart.findFirst({
+    where: { userId: user.id },
+    orderBy: { createdAt: "desc" },
+    include: { items: { include: { product: true } } },
+  });
+  if (!existingCart) {
+    const newCart = await prisma.cart.create({
+      data: { userId: user.id },
+      include: { items: { include: { product: true } } },
+    });
+    return c.json({
+      message: "Cart shopping data",
+      cart: newCart,
+    });
+  }
+  return c.json({
+    message: "Cart shopping data",
+    cart: existingCart,
+  });
 });
 
 Bun.serve({
